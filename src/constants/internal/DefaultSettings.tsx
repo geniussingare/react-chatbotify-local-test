@@ -188,6 +188,7 @@ export const DefaultSettings: Settings = {
 		rcbChunkStreamMessage: false,
 		rcbStopStreamMessage: false,
 		rcbRemoveMessage: false,
+		rcbSaveChatHistory: false,
 		rcbLoadChatHistory: false,
 		rcbToggleChatWindow: false,
 		rcbStartSpeakAudio: false,

@@ -6,7 +6,8 @@ import { useMessagesContext } from "../../../src/context/MessagesContext";
 import { useBotStatesContext } from "../../../src/context/BotStatesContext";
 import { useBotRefsContext } from "../../../src/context/BotRefsContext";
 import { useDispatchRcbEventInternal } from "../../../src/hooks/internal/useDispatchRcbEventInternal";
-import { getHistoryMessages, setHistoryMessages } from "../../../src/services/ChatHistoryService";
+import { getHistoryMessages, setHistoryMessages, saveChatHistory } from "../../../src/services/ChatHistoryService";
+import { RcbEvent } from "../../../src/constants/RcbEvent";
 import { Message } from "../../../src/types/Message";
 
 jest.mock("../../../src/context/SettingsContext");
@@ -31,6 +32,7 @@ describe("useMessagesInternal", () => {
 	const mockChatBodyRef = { current: null };
 	const mockGetHistoryMessages = jest.fn();
 	const mockSetHistoryMessages = jest.fn();
+	const mockSaveChatHistory = jest.fn();
 
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -70,6 +72,7 @@ describe("useMessagesInternal", () => {
 
 		(getHistoryMessages as jest.Mock).mockImplementation(mockGetHistoryMessages);
 		(setHistoryMessages as jest.Mock).mockImplementation(mockSetHistoryMessages);
+		(saveChatHistory as jest.Mock).mockImplementation(mockSaveChatHistory);
 	});
 
 	it("should return expected functions and values", () => {
@@ -192,6 +195,60 @@ describe("useMessagesInternal", () => {
 		});
 
 		expect(mockStreamMessageMap.current.has("BOT")).toBeFalsy();
+	});
+
+	it("should emit save chat history event and skip saving when prevented", async () => {
+		(useSettingsContext as jest.Mock).mockReturnValue({
+			settings: {
+				botBubble: { dangerouslySetInnerHtml: false, simulateStream: false },
+				userBubble: { dangerouslySetInnerHtml: false, simulateStream: false },
+				event: { rcbSaveChatHistory: true },
+			},
+		});
+		mockCallRcbEvent.mockResolvedValueOnce({ defaultPrevented: true });
+
+		const { result } = renderHook(() => useMessagesInternal());
+
+		await act(async () => {
+			await result.current.injectMessage("Test message", "BOT");
+			await Promise.resolve();
+		});
+
+		expect(mockCallRcbEvent).toHaveBeenCalledWith(RcbEvent.SAVE_CHAT_HISTORY, {
+			messages: expect.any(Array),
+		});
+		expect(mockSaveChatHistory).not.toHaveBeenCalled();
+	});
+
+	it("should allow save chat history event to override messages", async () => {
+		(useSettingsContext as jest.Mock).mockReturnValue({
+			settings: {
+				botBubble: { dangerouslySetInnerHtml: false, simulateStream: false },
+				userBubble: { dangerouslySetInnerHtml: false, simulateStream: false },
+				event: { rcbSaveChatHistory: true },
+			},
+		});
+		const overriddenMessages: Message[] = [{
+			id: "override",
+			content: "custom",
+			sender: "BOT",
+			type: "text",
+			timestamp: String(Date.now()),
+			tags: [],
+		}];
+		mockCallRcbEvent.mockResolvedValueOnce({
+			defaultPrevented: false,
+			data: { messages: overriddenMessages },
+		});
+
+		const { result } = renderHook(() => useMessagesInternal());
+
+		await act(async () => {
+			await result.current.injectMessage("Test message", "BOT");
+			await Promise.resolve();
+		});
+
+		expect(mockSaveChatHistory).toHaveBeenCalledWith(overriddenMessages);
 	});
 
 	it("should replace messages with array correctly", async () => {

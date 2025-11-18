@@ -3,6 +3,7 @@ import { RcbPreInjectMessageEvent } from "../src/types/events/RcbPreInjectMessag
 import { RcbPostInjectMessageEvent } from "../src/types/events/RcbPostInjectMessageEvent";
 import { RcbPreLoadChatBotEvent } from "../src/types/events/RcbPreLoadChatBotEvent";
 import { RcbPostLoadChatBotEvent } from "../src/types/events/RcbPostLoadChatBotEvent";
+import { RcbSaveChatHistoryEvent } from "../src/types/events/RcbSaveChatHistoryEvent";
 import { RcbLoadChatHistoryEvent } from "../src/types/events/RcbLoadChatHistoryEvent";
 import { RcbToggleChatWindowEvent } from "../src/types/events/RcbToggleChatWindowEvent";
 import { RcbStartSpeakAudioEvent } from "../src/types/events/RcbStartSpeakAudioEvent";
@@ -72,6 +73,7 @@ declare global {
 		"rcb-remove-message": RcbRemoveMessageEvent;
 
 		// chat history
+		"rcb-save-chat-history": RcbSaveChatHistoryEvent;
 		"rcb-load-chat-history": RcbLoadChatHistoryEvent;
 
 		// path

@@ -47,6 +47,23 @@ export const useMessagesInternal = () => {
 	const { playNotificationSound } = useNotificationInternal();
 
 	/**
+	 * Saves chat history with event dispatching.
+	 * 
+	 * @param messages messages to save
+	 */
+	const handleSaveChatHistory = useCallback(async (messages: Message[]) => {
+		if (settings.event?.rcbSaveChatHistory) {
+			const event = await dispatchRcbEvent(RcbEvent.SAVE_CHAT_HISTORY, { messages });
+			if (event.defaultPrevented) {
+				return;
+			}
+			messages = event.data?.messages ?? messages;
+		}
+
+		await saveChatHistory(messages);
+	}, [dispatchRcbEvent, settings.event?.rcbSaveChatHistory]);
+
+	/**
 	 * Handles post messages updates such as saving chat history, scrolling to bottom
 	 * and playing notification sound.
 	 * 
@@ -59,7 +76,7 @@ export const useMessagesInternal = () => {
 	 * @param isRepeatedStreamMessage boolean indicating whether to update scroll position
 	 */
 	const handlePostMessagesUpdate = useCallback((updatedMessages: Message[], isRepeatedStreamMessage = false) => {
-		saveChatHistory(updatedMessages);
+		handleSaveChatHistory(updatedMessages);
 
 		// tracks if notification should be played
 		let shouldNotify = true;
@@ -197,7 +214,7 @@ export const useMessagesInternal = () => {
 			setUnreadCount((prev) => prev + 1);
 		}
 		await simulateStreamDoneTask;
-		saveChatHistory(syncedMessagesRef.current);
+		handleSaveChatHistory(syncedMessagesRef.current);
 
 		// handles stop stream message event
 		if (settings.event?.rcbStopSimulateStreamMessage) {
@@ -408,7 +425,7 @@ export const useMessagesInternal = () => {
 
 		// remove sender from streaming list and save messages
 		streamMessageMap.current.delete(sender);
-		saveChatHistory(syncedMessagesRef.current);
+		handleSaveChatHistory(syncedMessagesRef.current);
 
 		// update params.userInput if sender is user
 		if (sender === "USER" && typeof message?.content === "string") {

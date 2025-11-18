@@ -14,6 +14,7 @@ export const MockDefaultSettings = {
 		rcbChunkStreamMessage: true,
 		rcbStopStreamMessage: true,
 		rcbRemoveMessage: true,
+		rcbSaveChatHistory: true,
 		rcbLoadChatHistory: true,
 		rcbToggleChatWindow: true,
 		rcbStartSpeakAudio: true,

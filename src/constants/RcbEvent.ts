@@ -24,6 +24,7 @@ enum RcbEvent {
 	REMOVE_MESSAGE = "rcb-remove-message",
 
 	// chat history
+	SAVE_CHAT_HISTORY = "rcb-save-chat-history",
 	LOAD_CHAT_HISTORY = "rcb-load-chat-history",
 
 	// path
