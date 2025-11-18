@@ -41,4 +41,4 @@ jobs:
     name: CI
     uses: ./.github/workflows/lint-and-build.yml
     with:
-      node-version: "22.4.1"
+      node-version: "22.9.0"

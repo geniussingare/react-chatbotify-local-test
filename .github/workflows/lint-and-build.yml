@@ -24,7 +24,7 @@ jobs:
       - name: Setup Node.js (Latest)
         uses: actions/setup-node@v4
         with:
-          node-version: "22.4.1"
+          node-version: "22.9.0"
 
       - name: Install Dependencies
         run: npm ci
@@ -65,4 +65,4 @@ jobs:
     name: "Run Tests"
     uses: ./.github/workflows/test.yml
     with:
-      node-version: "22.4.1"
+      node-version: "22.9.0"
