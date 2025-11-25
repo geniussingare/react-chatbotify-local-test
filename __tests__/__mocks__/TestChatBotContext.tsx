@@ -44,11 +44,13 @@ const TestChatBotProvider: React.FC<TestChatBotProviderProps> = ({
 				settings={settings}
 				setSyncedSettings={setSyncedSettings}
 				syncedSettingsRef={{ current: settings }}
+				userProvidedSettingsRef={{ current: initialSettings }}
 			>
 				<StylesProvider
 					styles={styles}
 					setSyncedStyles={setSyncedStyles}
 					syncedStylesRef={{ current: styles }}
+					userProvidedStylesRef={{ current: initialStyles }}
 				>
 					<ToastsProvider>
 						<BotRefsProvider botIdRef={{ current: '' }} flowRef={{ current: {} }}>

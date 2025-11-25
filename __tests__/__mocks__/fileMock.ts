@@ -1,4 +1,10 @@
 // __mocks__/fileMock.ts
+import React from "react";
+
+const MockSvg = (props: React.SVGProps<SVGSVGElement>) => React.createElement("svg", props);
+
+export default MockSvg;
+export const ReactComponent = MockSvg;
 export const audioIcon = "../../assets/audio_icon.svg";
 export const audioIconDisabled = "../../assets/audio_icon_disabled.svg";
 export const actionDisabledIcon = "../../assets/action_disabled_icon.svg";
