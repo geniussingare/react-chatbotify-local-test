@@ -19,6 +19,7 @@ type ParseConfig = {
 // Mock the parseConfig function
 jest.mock('../../src/utils/configParser', () => ({
 	parseConfig: jest.fn(),
+	deepClone: jest.fn(),
 }));
 
 describe("ChatBotContext", () => {

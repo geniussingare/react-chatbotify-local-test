@@ -9,7 +9,7 @@ import { Settings } from "../../types/Settings";
  */
 export const useSettingsInternal = () => {
 	// handles settings
-	const { settings, setSyncedSettings, syncedSettingsRef } = useSettingsContext();
+	const { settings, setSyncedSettings, syncedSettingsRef, userProvidedSettingsRef } = useSettingsContext();
 
 	/**
 	 * Updates the settings for the chatbot.
@@ -41,6 +41,7 @@ export const useSettingsInternal = () => {
 	return {
 		settings,
 		replaceSettings,
-		updateSettings
+		updateSettings,
+		userProvidedSettingsRef,
 	};
 };

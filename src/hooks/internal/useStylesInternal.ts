@@ -9,7 +9,7 @@ import { Styles } from "../../types/Styles";
  */
 export const useStylesInternal = () => {
 	// handles styles
-	const { styles, setSyncedStyles, syncedStylesRef } = useStylesContext();
+	const { styles, setSyncedStyles, syncedStylesRef, userProvidedStylesRef } = useStylesContext();
 
 	/**
 	 * Updates the styles for the chatbot.
@@ -41,6 +41,7 @@ export const useStylesInternal = () => {
 	return {
 		styles,
 		replaceStyles,
-		updateStyles
+		updateStyles,
+		userProvidedStylesRef,
 	};
 };

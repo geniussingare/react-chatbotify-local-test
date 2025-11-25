@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 
-import { getCombinedConfig } from "../../utils/configParser";
+import { deepClone, getCombinedConfig } from "../../utils/configParser";
 import { useSettingsInternal } from "./useSettingsInternal";
 import { useStylesInternal } from "./useStylesInternal";
+import { Settings } from "../../types/Settings";
+import { Styles } from "../../types/Styles";
 import { Plugin } from "../../types/Plugin";
 
 /**
@@ -10,8 +12,8 @@ import { Plugin } from "../../types/Plugin";
  */
 export const usePluginsInternal = (plugins: Array<Plugin> | undefined) => {
 
-	const { updateSettings } = useSettingsInternal();
-	const { updateStyles } = useStylesInternal();
+	const { settings, replaceSettings, userProvidedSettingsRef } = useSettingsInternal();
+	const { styles, replaceStyles, userProvidedStylesRef } = useStylesInternal();
 
 	// initializes plugins and retrieves metadata for setup
 	const pluginMetaData = plugins?.map((pluginHook) => pluginHook());
@@ -29,7 +31,16 @@ export const usePluginsInternal = (plugins: Array<Plugin> | undefined) => {
 			}
 		});
 
-		updateSettings(pluginSettings);
-		updateStyles(pluginStyles);
+		if (Object.keys(pluginSettings).length !== 0) {
+			const combinedSettings = getCombinedConfig(pluginSettings, deepClone(settings)) as Settings;
+			const finalSettings = getCombinedConfig(userProvidedSettingsRef.current, combinedSettings) as Settings;
+			replaceSettings(finalSettings);
+		}
+
+		if (Object.keys(pluginStyles).length !== 0) {
+			const combinedStyles = getCombinedConfig(pluginStyles, deepClone(styles)) as Styles;
+			const finalStyles = getCombinedConfig(userProvidedStylesRef.current, combinedStyles) as Styles;
+			replaceStyles(finalStyles);
+		}
 	}, [])
 };

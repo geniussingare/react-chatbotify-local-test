@@ -15,8 +15,8 @@ jest.mock("../../../src/viteconfig", () => ({
 }));
 
 describe("usePluginsInternal", () => {
-	const updateSettingsMock = jest.fn();
-	const updateStylesMock = jest.fn();
+	const replaceSettingsMock = jest.fn();
+	const replaceStylesMock = jest.fn();
 	const mockSettings: Settings = { general: { primaryColor: "red" } };
 	const mockStyles = {};
 	const mockPlugins = [
@@ -31,31 +31,45 @@ describe("usePluginsInternal", () => {
 		jest.clearAllMocks();
 		(useSettingsInternal as jest.Mock).mockReturnValue({
 			settings: mockSettings,
-			replaceSettings: jest.fn(),
-			updateSettings: updateSettingsMock,
+			replaceSettings: replaceSettingsMock,
+			userProvidedSettingsRef: { current: mockSettings },
 		});
 		(useStylesInternal as jest.Mock).mockReturnValue({
 			styles: mockStyles,
-			replaceStyles: jest.fn(),
-			updateStyles: updateStylesMock,
+			replaceStyles: replaceStylesMock,
+			userProvidedStylesRef: { current: mockStyles },
 		});
 	});
 
-	it("should call updateSettings and updateStyles methods with correct values, when plugins are used", () => {
+	it("should apply plugin overrides without replacing user provided values", () => {
 		renderHook(() => usePluginsInternal(mockPlugins));
 
-		expect(updateSettingsMock).toHaveBeenCalledWith({
-			general: { primaryColor: "blue" },
+		expect(replaceSettingsMock).toHaveBeenCalledWith({
+			general: { primaryColor: "red" },
 		});
-		expect(updateStylesMock).toHaveBeenCalledWith({
+		expect(replaceStylesMock).toHaveBeenCalledWith({
 			tooltipStyle: { color: "green" },
 		});
 	});
 
-	it("should call updateSettings and updateStyles methods with empty values, when no plugins are used", () => {
+	it("should override primaryColor with plugin value when user does not provide settings", () => {
+		(useSettingsInternal as jest.Mock).mockReturnValue({
+			settings: {},
+			replaceSettings: replaceSettingsMock,
+			userProvidedSettingsRef: { current: {} },
+		});
+
+		renderHook(() => usePluginsInternal(mockPlugins));
+
+		expect(replaceSettingsMock).toHaveBeenCalledWith({
+			general: { primaryColor: "blue" },
+		});
+	});
+
+	it("should skip updates when plugins are not provided", () => {
 		renderHook(() => usePluginsInternal([]));
 
-		expect(updateSettingsMock).toHaveBeenCalledWith({});
-		expect(updateStylesMock).toHaveBeenCalledWith({});
+		expect(replaceSettingsMock).not.toHaveBeenCalled();
+		expect(replaceStylesMock).not.toHaveBeenCalled();
 	});
 });

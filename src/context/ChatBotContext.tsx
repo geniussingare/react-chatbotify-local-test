@@ -1,6 +1,6 @@
 import { createContext, MutableRefObject, useContext, useEffect, useRef, useState } from "react";
 
-import { parseConfig } from "../utils/configParser";
+import { deepClone, parseConfig } from "../utils/configParser";
 import { BotRefsProvider } from "./BotRefsContext";
 import { BotStatesProvider } from "./BotStatesContext";
 import { MessagesProvider } from "./MessagesContext";
@@ -38,9 +38,11 @@ const ChatBotProvider = ({
 
 	// handles bot settings
 	const [botSettings, setSyncedBotSettings, syncedBotSettingsRef] = useSyncedRefState<Settings>({});
+	const userProvidedSettingsRef = useRef<Settings>({});
 
 	// handles bot styles
 	const [botStyles, setSyncedBotStyles, syncedBotStylesRef] = useSyncedRefState<Styles>({});
+	const userProvidedStylesRef = useRef<Styles>({});
 
 	// handles DOM loaded event to ensure chatbot is loaded after DOM is ready (necessary for SSR support)
 	const [isDomLoaded, setIsDomLoaded] = useState<boolean>(false);
@@ -69,6 +71,8 @@ const ChatBotProvider = ({
 	) => {
 		botIdRef.current = botId;
 		botFlowRef.current = flow;
+		userProvidedSettingsRef.current = deepClone(settings ?? {});
+		userProvidedStylesRef.current = deepClone(styles ?? {});
 		const combinedConfig = await parseConfig(botId, settings, styles, themes);
 
 		// applies css styles directly to chatbot
@@ -91,11 +95,13 @@ const ChatBotProvider = ({
 					settings={botSettings}
 					setSyncedSettings={setSyncedBotSettings}
 					syncedSettingsRef={syncedBotSettingsRef}
+					userProvidedSettingsRef={userProvidedSettingsRef}
 				>
 					<StylesProvider
 						styles={botStyles}
 						setSyncedStyles={setSyncedBotStyles}
 						syncedStylesRef={syncedBotStylesRef}
+						userProvidedStylesRef={userProvidedStylesRef}
 					>
 						<ToastsProvider>
 							<BotRefsProvider botIdRef={botIdRef} flowRef={botFlowRef}>

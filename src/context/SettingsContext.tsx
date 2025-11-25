@@ -10,11 +10,13 @@ type SettingsContextType = {
 	settings: Settings;
 	setSyncedSettings: Dispatch<SetStateAction<Settings>>;
 	syncedSettingsRef: MutableRefObject<Settings>;
+	userProvidedSettingsRef: MutableRefObject<Settings>;
 };
 const SettingsContext = createContext<SettingsContextType>({
 	settings: {},
 	setSyncedSettings: () => null,
-	syncedSettingsRef: {current: {}}
+	syncedSettingsRef: {current: {}},
+	userProvidedSettingsRef: {current: {}},
 });
 const useSettingsContext = () => useContext(SettingsContext);
 
@@ -26,14 +28,16 @@ const SettingsProvider = ({
 	settings = DefaultSettings,
 	setSyncedSettings,
 	syncedSettingsRef,
+	userProvidedSettingsRef,
 }: {
 	children: React.ReactNode;
 	settings: Settings;
 	setSyncedSettings: Dispatch<SetStateAction<Settings>>;
 	syncedSettingsRef: MutableRefObject<Settings>;
+	userProvidedSettingsRef: MutableRefObject<Settings>;
 }) => {
 	return (
-		<SettingsContext.Provider value={{ settings, setSyncedSettings, syncedSettingsRef }}>
+		<SettingsContext.Provider value={{ settings, setSyncedSettings, syncedSettingsRef, userProvidedSettingsRef }}>
 			{children}
 		</SettingsContext.Provider>
 	);

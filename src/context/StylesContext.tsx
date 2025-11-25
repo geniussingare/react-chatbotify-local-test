@@ -10,11 +10,13 @@ type StylesContextType = {
 	styles: Styles;
 	setSyncedStyles: Dispatch<SetStateAction<Styles>>;
 	syncedStylesRef: MutableRefObject<Styles>;
+	userProvidedStylesRef: MutableRefObject<Styles>;
 };
 const StylesContext = createContext<StylesContextType>({
 	styles: {},
 	setSyncedStyles: () => null,
-	syncedStylesRef: {current: {}}
+	syncedStylesRef: {current: {}},
+	userProvidedStylesRef: {current: {}},
 });
 const useStylesContext = () => useContext(StylesContext);
 
@@ -26,14 +28,16 @@ const StylesProvider = ({
 	styles = DefaultStyles,
 	setSyncedStyles,
 	syncedStylesRef,
+	userProvidedStylesRef,
 }: {
 	children: React.ReactNode;
 	styles: Styles;
 	setSyncedStyles: Dispatch<SetStateAction<Styles>>;
 	syncedStylesRef: MutableRefObject<Styles>;
+	userProvidedStylesRef: MutableRefObject<Styles>;
 }) => {
 	return (
-		<StylesContext.Provider value={{ styles, setSyncedStyles, syncedStylesRef }}>
+		<StylesContext.Provider value={{ styles, setSyncedStyles, syncedStylesRef, userProvidedStylesRef }}>
 			{children}
 		</StylesContext.Provider>
 	);
